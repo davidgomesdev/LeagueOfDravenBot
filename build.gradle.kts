@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "me.l3n.bot.discord.lod"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -59,6 +59,8 @@ tasks.withType<Jar> {
     manifest {
         attributes["Main-Class"] = "me.l3n.bot.discord.lod.MainKt"
     }
+
+    archiveFileName.set("LeagueOfDravenBot.jar")
 }
 
 task<Exec>("run") {
@@ -66,7 +68,7 @@ task<Exec>("run") {
 
     dependsOn(getSamBuildTask())
 
-    runCommand("""sam local invoke "LeagueOfDraven-Bot-Kotlin" -e sample-event.json""")
+    runCommand("""sam local invoke "LeagueOfDraven-Bot-Kotlin" -e event.json""")
 }
 
 task<Exec>("deploy") {

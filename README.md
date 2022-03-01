@@ -3,10 +3,13 @@ This queries the Riot Game's API to get the current free champion rotation, then
 
 ## Configuration
 
-Configure [these](src/main/kotlin/me/l3n/bot/discord/model/Config.kt) _(the ones without default are required)_ in (by priority):
-  - Event: the json that is provided when executing the function
-  - Environment variables: `Variables` of `template.yaml` or in configuration.
-    - Prepend the variable name inside in `Config` like so `name__config`, example: `bot__mentionEveryone`.
+Configure [these](src/main/kotlin/me/l3n/bot/discord/lod/model/Config.kt) _(the ones without default are required)_ in (by priority):
+  - For AWS Lambda, by priority:
+    - Event: the json that is provided when executing the function [example](event-sample.json)
+    - Environment variables: the yaml provided when building the function, these are configured in `Variables` of `template.yaml`. [example](template-sample.yaml)
+        - _Note: prepend the variable name inside each class like so `bot__mentionEveryone`._
+  - Normal Java run:
+    - Environment variables in a `application.yaml` [example](application-sample.yaml)
 
 ### Message styles
 <details>
@@ -29,7 +32,15 @@ _EmojisOnly_
 ![EmojisOnly](imgs/EmojisOnly.png)
 </details>
 
-# Local run
+# Local Java run
+
+`gradle shadowJar`
+
+Running the jar in `build/libs/`:
+
+`java -jar LeagueOfDravenBot.jar`
+
+# Local Lambda run
 
 Copy template-sample.yaml to template.yaml and fill it.
 

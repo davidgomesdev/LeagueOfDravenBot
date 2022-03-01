@@ -1,11 +1,11 @@
 /template.yaml
 /template-prod.yaml
 /application.yaml
+/event.json
 build
 
 /samconfig.toml
 .aws-sam/
-/sample-event.json
 
 # Template gitignore below
 

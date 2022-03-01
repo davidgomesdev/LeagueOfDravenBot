@@ -1,0 +1,10 @@
+{
+  "discord": {
+    "token": "fill-me",
+    "infoChannelID": "fill-me",
+    "errorChannelID": "fill-me"
+  },
+  "riot": {
+    "token": "fill-me"
+  }
+}
