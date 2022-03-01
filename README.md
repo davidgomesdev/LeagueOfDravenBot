@@ -46,7 +46,9 @@ Copy template-sample.yaml to template.yaml and fill it.
 
 Build: `sam build`
 
-Run: `sam local invoke "LeagueOfDraven-Bot-Kotlin" -e sample-event.json`
+Copy event-sample.json to event.json and optionally fill it.
+
+Run: `sam local invoke "LeagueOfDraven-Bot-Kotlin" -e event.json`
 
 Or the `runLambdaLocally` task.
 
