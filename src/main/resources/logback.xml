@@ -1,0 +1,21 @@
+<configuration>
+    <appender name="discord" class="me.l3n.bot.discord.lod.logger.DiscordLogger">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+    </appender>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="me.l3n.bot.discord" level="debug">
+        <appender-ref ref="console"/>
+    </logger>
+
+    <root level="error">
+        <appender-ref ref="discord"/>
+    </root>
+</configuration>

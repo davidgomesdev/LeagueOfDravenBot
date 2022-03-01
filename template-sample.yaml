@@ -1,0 +1,36 @@
+
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  LeagueOfDravenInfo
+
+  Sample SAM Template for LeagueOfDravenInfo
+
+Globals:
+  Function:
+    Timeout: 180
+    Environment:
+      Variables:
+        discord__token: token_here
+        discord__infoChannelID: id_here
+        discord__errorChannelID: id_here
+        league__token: token_here
+    # Recommended to use a higher size to be faster (++size = ++cpu)
+    MemorySize: 512
+
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: LeagueOfDraven-Bot-Kotlin
+      Handler: me.l3n.bot.discord.lod.LambdaHandler::handleRequest
+      Runtime: java11
+      Role:
+  Libs:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: LeagueOfDraven-Bot-New-lib
+      Description: Dependencies for the new LoD bot.
+      ContentUri: build/libs/LeagueOfDravenBot-1.0-SNAPSHOT-all.jar
+      CompatibleRuntimes:
+        - java11
