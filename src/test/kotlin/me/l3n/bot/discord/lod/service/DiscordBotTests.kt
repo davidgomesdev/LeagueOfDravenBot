@@ -88,10 +88,12 @@ class DiscordBotTests : ShouldSpec({
 
         context("with broken list") {
             beforeEach {
-                bot = DiscordBotImpl(dummyDiscordConfigWithBroken,
-                    dummyBotConfig,
+                bot = DiscordBotImpl(
+                    dummyDiscordConfigWithBroken,
+                    dummyBotConfig.copy(notifyWhenBroken = true),
                     kordMock,
-                    messageBuilderMock)
+                    messageBuilderMock
+                )
             }
 
             should("get info, error and broken channels") {

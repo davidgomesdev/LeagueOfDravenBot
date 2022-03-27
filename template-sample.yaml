@@ -31,6 +31,6 @@ Resources:
     Properties:
       LayerName: LeagueOfDraven-Bot-New-lib
       Description: Dependencies for the new LoD bot.
-      ContentUri: build/libs/LeagueOfDravenBot-1.0-SNAPSHOT-all.jar
+      ContentUri: build/libs/LeagueOfDravenBot.jar
       CompatibleRuntimes:
         - java11
