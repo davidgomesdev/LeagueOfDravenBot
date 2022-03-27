@@ -9,20 +9,11 @@ import me.l3n.bot.discord.lod.model.Rotation
 import me.l3n.bot.discord.lod.service.ErrorMessage
 import org.slf4j.LoggerFactory
 
-
-val brokenMessages by lazy {
-    listOf(
-        "Not recommended for <@&800466038168223775> to play this week.",
-        "UNBELIEVABLE. WHO INVENTED THIS CHAMP?",
-        "Prepare to cry this week.."
-    )
-}
-
 interface DiscordMessageBuilder {
     fun createBuilderForRotationEmbed(
         rotation: Rotation,
         emojis: Map<String, EmojiData>? = null,
-        sendBrokenMessage: Boolean = false,
+        sendBrokenMessage: Boolean = false
     ): EmbedBuilder
 
     fun createTextWithEmojisAndChamps(
@@ -51,31 +42,31 @@ class DiscordMessageBuilderImpl(
     ): EmbedBuilder = EmbedBuilder().apply {
         color = Color(formatConfig.embedColor)
         title = formatConfig.newRotationMessage
-        thumbnail { url = formatConfig.embedThumbnailURL }
+
+        val thumbnailURL = formatConfig.embedThumbnailURL
+
+        if (thumbnailURL != null) thumbnail { url = thumbnailURL }
 
         logger.debug("""Creating text with emoji style "${formatConfig.messageStyle}"""")
         rotation.roledChampions.forEach { (role, champions) ->
             val championsText = createTextWithEmojisAndChamps(emojis, champions)
 
-            if (championsText.isNotEmpty())
-                logger.info("Created for ${role.toDisplayName()}")
-            else
-                logger.info("No champions for ${role.toDisplayName()}")
+            if (championsText.isNotEmpty()) logger.info("Created for ${role.toDisplayName()}")
+            else logger.info("No champions for ${role.toDisplayName()}")
 
             val roleName = role.toDisplayName()
 
             field {
                 name = roleName
-                if (championsText.isNotEmpty())
-                    value = championsText
+                if (championsText.isNotEmpty()) value = championsText
             }
         }
 
-        if (sendBrokenMessage)
+        if (sendBrokenMessage && formatConfig.brokenMessages.isNotEmpty())
             field { value = getBrokenMessage() }
     }
 
-    private fun getBrokenMessage(): String = "||**⚠ ${brokenMessages.random()}**||"
+    private fun getBrokenMessage() = "||**⚠ ${formatConfig.brokenMessages.random()}**||"
 
     override fun createTextWithEmojisAndChamps(
         emojis: Map<String, EmojiData>?,

@@ -30,17 +30,19 @@ _SeparateLines_
 _EmojisOnly_
 
 ![EmojisOnly](imgs/EmojisOnly.png)
+
+_Cute image from [Wallpaper Access](https://wallpaperaccess.com)._
 </details>
 
-# Local Java run
+## Local Java run
 
 `gradle shadowJar`
 
-Running the jar in `build/libs/`:
+To run the jar, in `build/libs/`:
 
 `java -jar LeagueOfDravenBot.jar`
 
-# Local Lambda run
+## Local Lambda run
 
 Copy template-sample.yaml to template.yaml and fill it.
 
@@ -52,7 +54,7 @@ Run: `sam local invoke "LeagueOfDraven-Bot-Kotlin" -e event.json`
 
 Or the `runLambdaLocally` task.
 
-# Deploy
+## Deploy
 
 Copy template-sample.yaml to **template-prod.yaml** and fill it.
 

@@ -8,22 +8,23 @@ data class Config(
 
 data class BotConfig(
     /**
-     * This is being ignored, since there's no need (who's low level in 2021?)
+     * This is being ignored, since there's no need (who's low level in 2022?)
      * and it doesn't look pretty.
      */
     val showLowLevelRotation: Boolean = false,
     val mentionEveryone: Boolean = true,
     val statusMessage: String = "for the current rotation",
-    val notifyWhenBroken: Boolean = true,
-    val brokenListLimit: Int = 4,
+    val notifyWhenBroken: Boolean = false,
+    val brokenListLimit: Int = 0,
     val debug: DebugConfig = DebugConfig(),
     val format: FormatConfig = FormatConfig(),
 )
 
 data class FormatConfig(
     val newRotationMessage: String = "New champion rotation!",
+    val brokenMessages: List<String> = listOf(),
     val embedColor: Int = 0x3a7c85,
-    val embedThumbnailURL: String = "https://wallpaperaccess.com/full/3829550.jpg",
+    val embedThumbnailURL: String? = null,
     val messageStyle: MessageStyle = MessageStyle.SameLine,
 )
 
