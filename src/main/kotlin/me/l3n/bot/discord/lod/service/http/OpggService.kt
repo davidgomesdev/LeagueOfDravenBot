@@ -8,7 +8,7 @@ import org.jsoup.Jsoup
 
 
 private const val statisticsUrl = "https://euw.op.gg/champion/statistics"
-private val urlRegex = Regex("/.*/(?<name>.*)/(?<role>.*)")
+private val urlRegex = Regex("/.+/(?<name>.+)/(?<role>[a-zA-Z]+).+")
 
 interface OpggService {
     suspend fun getChampionRoles(): Map<String, Role>
