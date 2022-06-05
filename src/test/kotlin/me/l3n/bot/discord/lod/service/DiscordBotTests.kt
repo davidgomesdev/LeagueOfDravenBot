@@ -45,7 +45,6 @@ class DiscordBotTests : ShouldSpec({
 
     val rotationMessageMock: Message = mockk {}
     val rotationEmbedMock: Embed = mockk {}
-    val brokenMessageMock: Message = mockk {}
     val botUserMock: User = mockk {}
 
     val kordMock: Kord =
@@ -181,22 +180,17 @@ class DiscordBotTests : ShouldSpec({
             coEvery { infoChannelMock.messages } returns listOf(rotationMessageMock).asFlow()
         }
 
-        should("say rotation is NOT newer") {
+        should("say rotation is outdated") {
             val isNewer = bot.isRotationNewer(Rotations.withoutLowLevel)
 
             isNewer.shouldBeFalse()
 
-            coVerifyOrder {
+            coVerify {
                 infoChannelMock.messages
                 rotationMessageMock.author
                 kordMock.getSelf()
                 rotationMessageMock.embeds
                 rotationEmbedMock.fields
-
-                for (field in fieldMocks) {
-                    field.name
-                    field.value
-                }
             }
         }
     }

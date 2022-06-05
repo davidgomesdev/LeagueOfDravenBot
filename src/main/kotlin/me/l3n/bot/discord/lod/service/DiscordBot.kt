@@ -12,10 +12,14 @@ import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.supplier.EntitySupplyStrategy
 import dev.kord.rest.Image
 import dev.kord.rest.builder.message.EmbedBuilder
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import me.l3n.bot.discord.lod.formatter.DiscordMessageBuilder
 import me.l3n.bot.discord.lod.model.*
+import me.l3n.bot.discord.lod.utils.hasLetters
 import org.slf4j.LoggerFactory
 
 
@@ -150,37 +154,26 @@ open class DiscordBotImpl(
     private fun isEmbedOutdated(rotation: Rotation, old: Embed): Boolean {
         if (old.fields.isEmpty()) return true
 
-        val roledChampions = rotation.roledChampions
+        val fields = old.getRoleFields()
+        val champions = rotation.roledChampions
 
-        if (old.fields.size != roledChampions.keys.size) return true
+        if (fields.size != champions.keys.size) return true
 
-        roledChampions
-            .forEach { (role, champs) ->
-                val oldField =
-                    old.fields.firstOrNull { field ->
-                        Role.convert(field.name) == role
-                    } ?: return true
-                val fieldRole = oldField.name
-                val fieldChamps = oldField.value.extractNames()
-
-                if (fieldChamps.isEmpty() != champs.isEmpty()) return true
-
-                val isDifferent = champs.any { champ ->
-                    role.name.equals(
-                        fieldRole,
-                        ignoreCase = true
-                    ) && !containsChampion(fieldChamps, champ)
-                }
-
-                if (isDifferent)
-                    return true
-            }
-
-        return false
+        return areRolesEqual(fields, champions)
     }
 
-    private fun containsChampion(fieldText: String, champ: Champion) =
-        fieldText.contains(champ.name) || fieldText.contains(champ.nameForEmoji)
+    private fun areRolesEqual(fields: List<Embed.Field>, champions: Map<Role, List<Champion>>) =
+        champions.all { (role, champs) ->
+            val field = fields.first { it.name == role.toDisplayName() }
+
+            champs.all { champ -> field.value.containsChampion(champ) }
+        }
+
+    // The name of the "broken message" field is a "ltm" of UTF-8
+    private fun Embed.getRoleFields() = fields.filter { it.name.hasLetters() }
+
+    private fun String.containsChampion(champ: Champion) =
+        contains(Regex(".*\\(${champ.name}|${champ.nameForEmoji}\\).*"))
 
     private suspend fun uploadEmojis(rotation: Rotation, guild: GuildBehavior): Map<String, GuildEmoji>? {
         val debugConfig = botConfig.debug
@@ -315,7 +308,3 @@ open class DiscordBotImpl(
 }
 
 data class ErrorMessage(val title: String, val details: List<String>)
-
-fun String.extractNames() =
-    Regex("(<:(.*):\\d*>|\\w+)", setOf(RegexOption.IGNORE_CASE))
-        .findAll(this).map { it.groups[1]?.value }.joinToString(" ")
