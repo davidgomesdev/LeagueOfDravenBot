@@ -162,7 +162,7 @@ class DiscordBotTests : ShouldSpec({
         val fieldMocks = Rotations.withoutLowLevel.roledChampions.map { (role, champs) ->
             mockk<Embed.Field> {
                 every { name } returns role.toDisplayName()
-                every { value } returns champs.joinToString()
+                every { value } returns champs.joinToString(" ") { ":${it.nameForEmoji}:" }
             }
         }
 
@@ -180,7 +180,7 @@ class DiscordBotTests : ShouldSpec({
             coEvery { infoChannelMock.messages } returns listOf(rotationMessageMock).asFlow()
         }
 
-        should("say rotation is outdated") {
+        should("say rotation is NOT newer") {
             val isNewer = bot.isRotationNewer(Rotations.withoutLowLevel)
 
             isNewer.shouldBeFalse()
@@ -202,7 +202,7 @@ class DiscordBotTests : ShouldSpec({
                 .map { (role, champs) ->
                     mockk<Embed.Field> {
                         every { name } returns role.toDisplayName()
-                        every { value } returns champs.joinToString()
+                        every { value } returns champs.joinToString(" ") { it.name }
                     }
                 }
 
@@ -278,7 +278,7 @@ class DiscordBotTests : ShouldSpec({
 
         context("with last rotation being invalid / all unknown") {
             val champions = Rotations.withoutLowLevel.roledChampions
-                .values.flatten().joinToString(" ")
+                .values.flatten().joinToString(" ") { it.name }
             val embedMocks = listOf(mockk<Embed.Field> {
                 every { name } returns "Unknown"
                 every { value } returns champions

@@ -159,7 +159,7 @@ open class DiscordBotImpl(
 
         if (fields.size != champions.keys.size) return true
 
-        return areRolesEqual(fields, champions)
+        return !areRolesEqual(fields, champions)
     }
 
     private fun areRolesEqual(fields: List<Embed.Field>, champions: Map<Role, List<Champion>>) =
@@ -173,7 +173,7 @@ open class DiscordBotImpl(
     private fun Embed.getRoleFields() = fields.filter { it.name.hasLetters() }
 
     private fun String.containsChampion(champ: Champion) =
-        contains(Regex(".*\\(${champ.name}|${champ.nameForEmoji}\\).*"))
+        contains(Regex(".*(${champ.name}|${champ.nameForEmoji}).*"))
 
     private suspend fun uploadEmojis(rotation: Rotation, guild: GuildBehavior): Map<String, GuildEmoji>? {
         val debugConfig = botConfig.debug
