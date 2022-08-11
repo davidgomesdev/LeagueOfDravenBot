@@ -331,7 +331,7 @@ open class DiscordBotImpl(
         }
 
     private fun getChannelById(id: Long): TextChannel? = runBlocking {
-        discord.getChannelOf<TextChannel>(Snowflake(id))?.withStrategy(EntitySupplyStrategy.rest)
+        discord.getChannelOf(Snowflake(id))
     }
 }
 
