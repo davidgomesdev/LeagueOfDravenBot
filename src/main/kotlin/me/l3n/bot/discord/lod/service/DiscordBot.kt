@@ -1,14 +1,17 @@
 package me.l3n.bot.discord.lod.service
 
+import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.behavior.GuildBehavior
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.createEmoji
+import dev.kord.core.behavior.edit
 import dev.kord.core.entity.Embed
 import dev.kord.core.entity.GuildEmoji
 import dev.kord.core.entity.Message
 import dev.kord.core.entity.channel.TextChannel
+import dev.kord.core.firstOrNull
 import dev.kord.core.supplier.EntitySupplyStrategy
 import dev.kord.rest.Image
 import dev.kord.rest.builder.message.EmbedBuilder
@@ -83,6 +86,8 @@ open class DiscordBotImpl(
     override suspend fun sendNewRotation(rotation: Rotation): Collection<GuildEmoji>? {
         val guild = infoChannel.guild
 
+        setAccentColor(guild, botConfig.format.roleColor)
+
         val newEmojis = uploadEmojis(rotation, guild)
         val newEmojisData = newEmojis?.mapValues { (_, emoji) -> emoji.data }
 
@@ -115,6 +120,28 @@ open class DiscordBotImpl(
         return newEmojis?.values
     }
 
+    private suspend fun setAccentColor(guild: GuildBehavior, color: Int) {
+        // this would be preferred, but Kord's RoleTags is returning nothing
+//        val botRole = guild
+//            .roles
+//            .firstOrNull { role ->
+//                role.managed && role.tags?.botId == discord.selfId
+//            }
+        val botRole = guild.getMember(discord.selfId).roles.firstOrNull { it.managed }
+
+        if (botRole == null) {
+            logger.warn("I don't have my own role!!")
+            return
+        }
+
+        if (botRole.color.rgb != color) {
+            botRole.edit {
+                this.color = Color(color)
+            }
+            logger.info("Changed role color")
+        }
+    }
+
     override suspend fun cleanupOldRotation(rotation: Rotation) {
         deleteRotationEmojis(infoChannel.guild, rotation.allChampions)
         logger.info("Deleted old rotation emojis")
@@ -131,25 +158,26 @@ open class DiscordBotImpl(
     }
 
     override suspend fun isRotationNewer(rotation: Rotation): Boolean {
+        if (botConfig.debug.alwaysSendRotation) {
+            logger.debug("Configured to always send rotation")
+            return true
+        }
+
         val lastRotation = getLastEmbedIfOwn(infoChannel) ?: return true
         logger.info("Got last message")
 
-        val debugConfig = botConfig.debug
-
-        return debugConfig.alwaysSendRotation ||
-            isEmbedOutdated(rotation, lastRotation)
+        return isEmbedOutdated(rotation, lastRotation)
     }
 
-    private suspend fun getLastEmbedIfOwn(textChannel: TextChannel): Embed? {
-        // We can't use [lastMessage] because it gets deleted ones as well
-        val lastMessage: Message = textChannel.messages.take(1).firstOrNull() ?: return null
+    // We can't use [lastMessage] because it gets deleted ones as well
+    private suspend fun getLastEmbedIfOwn(textChannel: TextChannel) =
+        textChannel.messages.take(1).firstOrNull()?.let { lastMessage ->
+            if (lastMessage.author != discord.getSelf()) return null
 
-        if (lastMessage.author != discord.getSelf()) return null
+            val embeds = lastMessage.embeds
 
-        val embeds = lastMessage.embeds
-
-        return embeds.firstOrNull()
-    }
+            embeds.firstOrNull()
+        }
 
     private fun isEmbedOutdated(rotation: Rotation, old: Embed): Boolean {
         if (old.fields.isEmpty()) return true
@@ -303,7 +331,7 @@ open class DiscordBotImpl(
         }
 
     private fun getChannelById(id: Long): TextChannel? = runBlocking {
-        discord.getChannelOf(Snowflake(id))
+        discord.getChannelOf<TextChannel>(Snowflake(id))?.withStrategy(EntitySupplyStrategy.rest)
     }
 }
 
