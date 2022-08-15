@@ -23,10 +23,14 @@ data class BotConfig(
 data class FormatConfig(
     val newRotationMessage: String = "New champion rotation!",
     val brokenMessages: List<String> = listOf(),
-    val roleColor: Int = 0x389faf,
-    val embedColor: Int = 0x3a7c85,
+    val themes: Map<String, ThemeConfig> = mapOf("default" to ThemeConfig()),
     val embedThumbnailURL: String? = null,
     val messageStyle: MessageStyle = MessageStyle.SameLine,
+)
+
+data class ThemeConfig(
+    val roleColor: Int = 0x389faf,
+    val embedColor: Int = 0x3a7c85,
 )
 
 data class DebugConfig(

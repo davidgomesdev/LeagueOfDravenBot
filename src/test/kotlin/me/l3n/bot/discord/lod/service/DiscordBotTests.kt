@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.asFlow
 import me.l3n.bot.discord.lod.formatter.DiscordMessageBuilder
 import me.l3n.bot.discord.lod.model.BotConfig
 import me.l3n.bot.discord.lod.model.DiscordConfig
+import me.l3n.bot.discord.lod.model.FormatConfig
 import me.l3n.bot.discord.lod.model.Role
 import me.l3n.bot.discord.lod.models.Champs
 import me.l3n.bot.discord.lod.models.Rotations
@@ -36,6 +37,7 @@ class DiscordBotTests : ShouldSpec({
     )
     val dummyDiscordConfigWithBroken =
         DiscordConfig("aaBBcc", infoChannelID.value, errorChannelID.value, brokenChannelID.value)
+    val dummyFormatConfig = FormatConfig()
 
     val dummyBotConfig = BotConfig()
 
@@ -71,10 +73,13 @@ class DiscordBotTests : ShouldSpec({
     context("at initialization") {
         context("without broken list") {
             beforeEach {
-                bot = DiscordBotImpl(dummyDiscordConfig,
+                bot = DiscordBotImpl(
+                    dummyDiscordConfig,
                     dummyBotConfig,
+                    dummyFormatConfig,
                     kordMock,
-                    messageBuilderMock)
+                    messageBuilderMock
+                )
             }
 
             should("get info and error channels") {
@@ -90,6 +95,7 @@ class DiscordBotTests : ShouldSpec({
                 bot = DiscordBotImpl(
                     dummyDiscordConfigWithBroken,
                     dummyBotConfig.copy(notifyWhenBroken = true),
+                    dummyFormatConfig,
                     kordMock,
                     messageBuilderMock
                 )
@@ -107,10 +113,13 @@ class DiscordBotTests : ShouldSpec({
 
     context("without messages") {
         beforeEach {
-            bot = DiscordBotImpl(dummyDiscordConfig,
+            bot = DiscordBotImpl(
+                dummyDiscordConfig,
                 dummyBotConfig,
+                dummyFormatConfig,
                 kordMock,
-                messageBuilderMock)
+                messageBuilderMock
+            )
 
             coEvery { kordMock.getSelf() } returns botUserMock
 
@@ -130,10 +139,13 @@ class DiscordBotTests : ShouldSpec({
 
     context("embed without fields") {
         beforeEach {
-            bot = DiscordBotImpl(dummyDiscordConfig,
+            bot = DiscordBotImpl(
+                dummyDiscordConfig,
                 dummyBotConfig,
+                dummyFormatConfig,
                 kordMock,
-                messageBuilderMock)
+                messageBuilderMock
+            )
 
             coEvery { rotationMessageMock.author } returns botUserMock
             coEvery { kordMock.getSelf() } returns botUserMock
@@ -167,10 +179,13 @@ class DiscordBotTests : ShouldSpec({
         }
 
         beforeEach {
-            bot = DiscordBotImpl(dummyDiscordConfig,
+            bot = DiscordBotImpl(
+                dummyDiscordConfig,
                 dummyBotConfig,
+                dummyFormatConfig,
                 kordMock,
-                messageBuilderMock)
+                messageBuilderMock
+            )
 
             coEvery { rotationMessageMock.author } returns botUserMock
             coEvery { kordMock.getSelf() } returns botUserMock
@@ -207,10 +222,13 @@ class DiscordBotTests : ShouldSpec({
                 }
 
             beforeEach {
-                bot = DiscordBotImpl(dummyDiscordConfig,
+                bot = DiscordBotImpl(
+                    dummyDiscordConfig,
                     dummyBotConfig,
+                    dummyFormatConfig,
                     kordMock,
-                    messageBuilderMock)
+                    messageBuilderMock
+                )
 
                 coEvery { rotationMessageMock.author } returns botUserMock
                 coEvery { kordMock.getSelf() } returns botUserMock
@@ -248,10 +266,13 @@ class DiscordBotTests : ShouldSpec({
                 })
 
             beforeEach {
-                bot = DiscordBotImpl(dummyDiscordConfig,
+                bot = DiscordBotImpl(
+                    dummyDiscordConfig,
                     dummyBotConfig,
+                    dummyFormatConfig,
                     kordMock,
-                    messageBuilderMock)
+                    messageBuilderMock
+                )
 
                 coEvery { rotationMessageMock.author } returns botUserMock
                 coEvery { kordMock.getSelf() } returns botUserMock
@@ -285,10 +306,13 @@ class DiscordBotTests : ShouldSpec({
             })
 
             beforeEach {
-                bot = DiscordBotImpl(dummyDiscordConfig,
+                bot = DiscordBotImpl(
+                    dummyDiscordConfig,
                     dummyBotConfig,
+                    dummyFormatConfig,
                     kordMock,
-                    messageBuilderMock)
+                    messageBuilderMock
+                )
 
                 coEvery { rotationMessageMock.author } returns botUserMock
                 coEvery { kordMock.getSelf() } returns botUserMock

@@ -48,6 +48,7 @@ interface DiscordSender {
 open class DiscordBotImpl(
     discordConfig: DiscordConfig,
     private val botConfig: BotConfig,
+    private val formatConfig: FormatConfig,
     private val discord: Kord,
     private val messageBuilder: DiscordMessageBuilder,
 ) : DiscordBot, DiscordSender {
@@ -84,9 +85,15 @@ open class DiscordBotImpl(
      * @return the champion icons uploaded
      */
     override suspend fun sendNewRotation(rotation: Rotation): Collection<GuildEmoji>? {
+        logger.debug("Choosing a random theme...")
+
+        val theme = formatConfig.themes.entries.random()
+
+        logger.info("Sending rotation with theme '${theme.key}'")
+
         val guild = infoChannel.guild
 
-        setAccentColor(guild, botConfig.format.roleColor)
+        setAccentColor(guild, theme.value.roleColor)
 
         val newEmojis = uploadEmojis(rotation, guild)
         val newEmojisData = newEmojis?.mapValues { (_, emoji) -> emoji.data }
@@ -107,10 +114,11 @@ open class DiscordBotImpl(
                 containsBrokenChampion
             }
 
-        val currentRotationEmbed = messageBuilder.createBuilderForRotationEmbed(
+        val currentRotationEmbed = messageBuilder.createRotationEmbed(
             rotation,
             newEmojisData,
             sendBrokenMessage,
+            theme.value.embedColor
         )
         logger.info("Created rotation embed")
 

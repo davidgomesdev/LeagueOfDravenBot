@@ -9,11 +9,14 @@ import me.l3n.bot.discord.lod.model.Rotation
 import me.l3n.bot.discord.lod.service.ErrorMessage
 import org.slf4j.LoggerFactory
 
+private const val ERROR_EMBED_COLOR = 0xED4245
+
 interface DiscordMessageBuilder {
-    fun createBuilderForRotationEmbed(
+    fun createRotationEmbed(
         rotation: Rotation,
         emojis: Map<String, EmojiData>? = null,
-        sendBrokenMessage: Boolean = false
+        sendBrokenMessage: Boolean = false,
+        embedColor: Int
     ): EmbedBuilder
 
     fun createTextWithEmojisAndChamps(
@@ -35,12 +38,13 @@ class DiscordMessageBuilderImpl(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun createBuilderForRotationEmbed(
+    override fun createRotationEmbed(
         rotation: Rotation,
         emojis: Map<String, EmojiData>?,
         sendBrokenMessage: Boolean,
+        embedColor: Int
     ): EmbedBuilder = EmbedBuilder().apply {
-        color = Color(formatConfig.embedColor)
+        color = Color(embedColor)
         title = formatConfig.newRotationMessage
 
         val thumbnailURL = formatConfig.embedThumbnailURL
@@ -82,7 +86,7 @@ class DiscordMessageBuilderImpl(
         message: String,
         details: ErrorMessage?,
     ): EmbedBuilder = EmbedBuilder().apply {
-        color = Color(0xED4245)
+        color = Color(ERROR_EMBED_COLOR)
         title = message
 
         if (details != null)

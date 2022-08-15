@@ -7,7 +7,6 @@ import dev.kord.core.Kord
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
-import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import me.l3n.bot.discord.lod.formatter.DiscordMessageBuilder
 import me.l3n.bot.discord.lod.formatter.DiscordMessageBuilderImpl
@@ -83,10 +82,13 @@ private val botModule = module {
     single { runBlocking { Kord(get<DiscordConfig>().token) } }
     single<DiscordMessageBuilder> { DiscordMessageBuilderImpl(get(), get()) }
     single(createdAtStart = true) {
-        DiscordBotImpl(get(),
+        DiscordBotImpl(
             get(),
             get(),
-            get())
+            get(),
+            get(),
+            get()
+        )
     } binds arrayOf(DiscordBot::class, DiscordSender::class)
 }
 
